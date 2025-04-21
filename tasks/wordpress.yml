@@ -1,0 +1,60 @@
+---
+- name: Quitar curl-minimal si está presente para evitar conflictos
+  ansible.builtin.dnf:
+    name: curl-minimal
+    state: absent
+  when: ansible_distribution in ['Rocky', 'AlmaLinux']
+  failed_when: false
+
+- name: Instalar dependencias para WordPress
+  ansible.builtin.package:
+    name:
+      - unzip
+      - curl
+    state: present
+    update_cache: yes
+
+- name: Descargar WordPress
+  ansible.builtin.get_url:
+    url: https://wordpress.org/wordpress-6.7.2.zip
+    dest: /tmp/wordpress.zip
+    mode: '0644'
+
+- name: Descomprimir Wordpress
+  ansible.builtin.unarchive:
+    src: /tmp/wordpress.zip
+    dest: /srv/
+    remote_src: yes
+
+- name: Crea grupo "wordpress"
+  ansible.builtin.group:
+    name: wordpress
+
+- name: Crea usuario "wordpress"
+  ansible.builtin.user:
+    name: wordpress
+    group: wordpress
+    home: /srv/wordpress/
+
+- name: Copiar archivo de configuración wp-config.php
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: /srv/wordpress/wp-config.php
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: '0644'
+
+- name: Verificar contexto SELinux en /srv/wordpress
+  ansible.builtin.command: ls -Zd /srv/wordpress
+  register: selinux_context
+  changed_when: false
+  failed_when: false
+
+- name: Ajustar contexto SELinux para WordPress (solo si es necesario)
+  ansible.builtin.command: chcon -Rt httpd_sys_content_t /srv/wordpress
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_selinux.status == "enabled"
+    - "'httpd_sys_content_t' not in selinux_context.stdout"
+  become: true
+  changed_when: true
