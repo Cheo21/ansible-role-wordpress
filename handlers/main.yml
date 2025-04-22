@@ -1,7 +1,7 @@
 ---
 # handlers/main.yml
 - name: Reiniciar Apache
-  ansible.builtin.command: "{{ apache_cmmd }} -k graceful"
+  ansible.builtin.command: "{{ apache_cmmd }}"
   when: ansible_virtualization_type == "docker"
   changed_when: false
 

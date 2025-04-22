@@ -1,21 +1,21 @@
 ---
-- name: Verify role effects
+- name: Verficiar role
   hosts: all
   become: true
   tasks:
-    - name: Check if port 80 is open
+    - name: Chequear si puerto 80 devuelve algo
       ansible.builtin.wait_for:
         host: "{{ ansible_default_ipv4.address }}"  # Usamos la IP externa
         port: 80
         state: started
         timeout: 10
 
-    - name: Check if wp-config.php exists
+    - name: Consultar si wp-config.php existe
       ansible.builtin.stat:
         path: /srv/wordpress/wp-config.php
       register: wp_config
 
-    - name: Assert wp-config.php exists
+    - name: Confirmar si wp-config.php existe
       ansible.builtin.assert:
         that:
           - wp_config.stat.exists

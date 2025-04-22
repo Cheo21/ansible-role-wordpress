@@ -2,11 +2,11 @@
 - name: Cargar variables específicas del sistema
   ansible.builtin.include_vars: "{{ ansible_os_family | lower }}.yml"
 
-- name: Instalar Apache
-  ansible.builtin.import_tasks: "apache.yml"
-
 - name: Instalar PHP
   ansible.builtin.import_tasks: php.yml
+
+- name: Instalar Apache
+  ansible.builtin.import_tasks: "apache.yml"
 
 - name: Descargar e instalar WordPress
   ansible.builtin.import_tasks: wordpress.yml

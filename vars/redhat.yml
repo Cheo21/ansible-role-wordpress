@@ -1,7 +1,7 @@
 ---
 apache_package: httpd
 apache_path: /etc/httpd/conf.d/
-apache_cmmd: apachectl
+apache_cmmd: httpd
 php_packages:
   - php
   - php-mysqlnd

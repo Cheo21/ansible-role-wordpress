@@ -6,12 +6,22 @@
     update_cache: yes
   become: yes
 
-- name: Verificar versión de PHP
-  ansible.builtin.command: php -v
-  register: php_version
-  changed_when: false
-  ignore_errors: yes
+- name: Crear directorio para socket
+  ansible.builtin.file:
+    path: "/run/php-fpm"
+    state: directory
+    mode: '0755'
+  when: ansible_os_family == "RedHat"
 
-- name: Mostrar versión instalada de PHP
-  ansible.builtin.debug:
-    msg: "PHP instalado: {{ php_version.stdout }}"
+- name: Verificar si php-fpm está en ejecución
+  ansible.builtin.command: pgrep -x php-fpm
+  register: php_fpm_running
+  failed_when: false
+  changed_when: false
+  when: ansible_os_family == "RedHat"
+
+- name: Ejecutar php-fpm solo si no está en ejecución
+  ansible.builtin.command: php-fpm
+  changed_when: true
+  ignore_errors: true
+  when: ansible_os_family == "RedHat" and php_fpm_running.rc != 0

@@ -5,7 +5,7 @@ galaxy_info:
   author: José Guerrero
   description: Role para instalar y configurar WordPress
   license: MIT
-  min_ansible_version: "2.12"
+  min_ansible_version: "2.17"
   platforms:
     - name: EL
       versions:

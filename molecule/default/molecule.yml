@@ -10,8 +10,7 @@ platforms:
   - name: instance-ubuntu
     image: geerlingguy/docker-ubuntu2404-ansible
   - name: instance-rocky
-    image: geerlingguy/docker-rockylinux9-ansible
-  
+    image: geerlingguy/docker-rockylinux9-ansible  
 provisioner:
   name: ansible
 

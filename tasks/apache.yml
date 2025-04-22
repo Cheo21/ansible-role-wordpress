@@ -16,7 +16,6 @@
     src: wordpress.conf.j2
     dest: "{{ apache_path }}wordpress.conf"
     mode: '0644'
-  notify: Reiniciar Apache
 
 - name: Verificar si mod_rewrite está habilitado
   ansible.builtin.command: a2query -m rewrite
@@ -28,7 +27,6 @@
   ansible.builtin.command: a2enmod rewrite
   when: ansible_os_family == "Debian" and mod_rewrite_enabled.rc != 0
   changed_when: true
-  notify: Reiniciar Apache
 
 - name: Verificar si el sitio por defecto está habilitado
   ansible.builtin.command: a2query -s 000-default
@@ -39,5 +37,19 @@
 - name: Deshabilitar sitio por defecto
   ansible.builtin.command: a2dissite 000-default.conf
   when: ansible_os_family == "Debian" and default_site_enabled.rc == 0
-  notify: Reiniciar Apache
   changed_when: true
+
+- name: Verificar si el sitio por wordpress está habilitado
+  ansible.builtin.command: a2query -s wordpress.conf
+  register: wordpress_site_enabled
+  failed_when: false
+  changed_when: false
+
+- name: Habilitar sitio por wordpress solo si no está habilitado
+  ansible.builtin.command: a2ensite wordpress.conf
+  when: ansible_os_family == "Debian" and wordpress_site_enabled.rc != 0
+  changed_when: true
+
+- name: Reiniciar Apache
+  ansible.builtin.command: "{{ apache_cmmd }}"
+  changed_when: false
