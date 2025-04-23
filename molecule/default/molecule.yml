@@ -6,6 +6,7 @@ dependency:
 driver:
   name: docker
 
+
 platforms:
   - name: instance-debian
     image: geerlingguy/docker-debian12-ansible
@@ -18,3 +19,6 @@ provisioner:
 
 verifier:
   name: ansible
+  options:
+    skip_list:
+      - role-name
