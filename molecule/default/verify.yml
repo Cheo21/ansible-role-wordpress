@@ -1,11 +1,11 @@
 ---
-- name: Verficiar role
+- name: Verificar role
   hosts: all
   become: true
   tasks:
     - name: Chequear si puerto 80 devuelve algo
       ansible.builtin.wait_for:
-        host: "{{ ansible_default_ipv4.address }}"  # Usamos la IP externa
+        host: "{{ ansible_default_ipv4.address }}"
         port: 80
         state: started
         timeout: 10
@@ -19,3 +19,31 @@
       ansible.builtin.assert:
         that:
           - wp_config.stat.exists
+        fail_msg: "❌ El archivo wp-config.php no existe"
+        success_msg: "✅ wp-config.php existe correctamente"
+
+    - name: Verificar si PHP está instalado
+      ansible.builtin.command: php -v
+      register: php_version
+      changed_when: false
+      failed_when: php_version.rc != 0
+
+    - name: Asegurarse de que PHP esté instalado
+      ansible.builtin.assert:
+        that:
+          - php_version.rc == 0
+        fail_msg: "❌ PHP no está instalado"
+        success_msg: "✅ PHP está instalado correctamente"
+
+    - name: Verificar si Apache está corriendo (modo Docker)
+      ansible.builtin.shell: "ps aux | grep '[a]pache2' || ps aux | grep '[h]ttpd'"
+      register: apache_process
+      changed_when: false
+      failed_when: apache_process.rc != 0
+
+    - name: Asegurarse de que Apache esté corriendo
+      ansible.builtin.assert:
+        that:
+          - apache_process.rc == 0
+        fail_msg: "❌ Apache no está corriendo"
+        success_msg: "✅ Apache está corriendo correctamente"
