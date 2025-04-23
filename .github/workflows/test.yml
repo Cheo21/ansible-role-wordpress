@@ -25,4 +25,5 @@ jobs:
 
       - name: Run Molecule tests
         run: |
-          molecule test
+          molecule test -s default
+
