@@ -19,6 +19,3 @@ provisioner:
 
 verifier:
   name: ansible
-  options:
-    skip_list:
-      - role-name
