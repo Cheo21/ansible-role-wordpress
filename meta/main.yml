@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: wordpress
-  namespace: cheo21 
+  namespace: Cheo21 
   author: José Guerrero
   description: Role para instalar y configurar WordPress
   license: MIT
